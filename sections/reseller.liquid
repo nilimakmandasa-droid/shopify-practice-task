@@ -1,0 +1,150 @@
+{% comment %}
+  Template: reseller.liquid
+{% endcomment %}
+
+<div id="password-protection"></div>
+
+<!-- Drawer HTML rendered outside JS -->
+<div id="custom-product-drawer" class="custom-product-drawer" style="display:none;">
+  <div class="drawer__header">
+    <h2 class="drawer__title">Special Offer</h2>
+    <button class="drawer__close js-drawer-close">X</button>
+  </div>
+  <div class="drawer__content">
+    <p>This is the drawer content for resellers.</p>
+    <!-- Or include your snippet: {% render 'custom-drawer' %} -->
+  </div>
+</div>
+
+<style>
+  .custom-product-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 300px;
+    background-color: #f9f9f9;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 100;
+    display: block; /* needed for transition */
+  }
+  .custom-product-drawer.open {
+    transform: translateX(0);
+  }
+  .drawer__header {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .drawer__title {
+    margin: 0;
+    font-size: 1.2em;
+  }
+  .drawer__close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const passwordProtection = document.getElementById('password-protection');
+    const drawer = document.getElementById('custom-product-drawer');
+    const correctPassword = 'YOUR_SECRET_PASSWORD'; // Change this!
+
+    const pageContentHTML = `
+      <div id="page-content">
+        <h1>This is the reseller page</h1>
+        <button id="open-drawer-button">Show Special Offer</button>
+      </div>
+    `;
+
+    const passwordFormHTML = `
+      <div id="password-form">
+        <h2>Wholesale Access</h2>
+        <p>Please enter the password to access this page.</p>
+        <input type="password" id="wholesale-password" placeholder="Your Password" />
+        <button id="submit-password">Submit</button>
+        <p id="password-message" style="color: red; display: none;">Incorrect password. Please try again.</p>
+      </div>
+    `;
+
+    function showContent() {
+      passwordProtection.innerHTML = pageContentHTML;
+      drawer.style.display = 'block'; // Show drawer but keep it hidden off-screen until open
+      attachDrawerListeners();
+    }
+
+    function showPasswordForm() {
+      passwordProtection.innerHTML = passwordFormHTML;
+      drawer.style.display = 'none'; // Hide drawer until logged in
+      attachFormSubmitListener();
+    }
+
+    function checkPassword(pwd) {
+      if (pwd === correctPassword) {
+        localStorage.setItem('wholesalePassword', correctPassword);
+        showContent();
+        return true;
+      } else {
+        const msg = document.getElementById('password-message');
+        const input = document.getElementById('wholesale-password');
+        if (msg) msg.style.display = 'block';
+        if (input) input.value = '';
+        return false;
+      }
+    }
+
+    // Check URL param or localStorage
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlPassword = urlParams.get('pass');
+    const storedPassword = localStorage.getItem('wholesalePassword');
+
+    if (urlPassword && checkPassword(urlPassword)) {
+      // URL password correct, show content
+    } else if (storedPassword === correctPassword) {
+      showContent();
+    } else {
+      showPasswordForm();
+    }
+
+    function attachFormSubmitListener() {
+      const submitButton = document.getElementById('submit-password');
+      if (submitButton) {
+        submitButton.addEventListener('click', function() {
+          const input = document.getElementById('wholesale-password');
+          if (input) checkPassword(input.value);
+        });
+      }
+    }
+
+    function attachDrawerListeners() {
+      const openButton = document.getElementById('open-drawer-button');
+      const closeButton = drawer.querySelector('.js-drawer-close');
+      const body = document.body;
+
+      if (!openButton || !closeButton) return;
+
+      openButton.addEventListener('click', () => {
+        drawer.classList.add('open');
+      });
+
+      closeButton.addEventListener('click', () => {
+        drawer.classList.remove('open');
+      });
+
+      // Close drawer when clicking outside
+      body.addEventListener('click', (event) => {
+        if (!drawer.contains(event.target) && event.target !== openButton) {
+          drawer.classList.remove('open');
+        }
+      });
+    }
+  });
+</script>

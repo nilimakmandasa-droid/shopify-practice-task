@@ -1,0 +1,21 @@
+{% comment %}
+  Snippet: custom-product-drawer.liquid
+{% endcomment %}
+<div class="custom-product-drawer" id="custom-product-drawer" style="display: none;">
+  <div class="drawer__header">
+    <h2 class="drawer__title">Special Offer for This Product</h2>
+    <button type="button" class="drawer__close js-drawer-close" aria-label="Close drawer">
+      {%- render 'icon-close' -%}
+    </button>
+  </div>
+  <div class="drawer__content">
+    <p>This is the custom content for your product drawer.</p>
+    <ul>
+      <li>Benefit 1 of this product</li>
+      <li>Benefit 2 of this product</li>
+      <li>Special Link: <a href="#">Click Here</a></li>
+    </ul>
+  </div>
+</div>
+
+

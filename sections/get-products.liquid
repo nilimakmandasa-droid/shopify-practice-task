@@ -1,0 +1,98 @@
+{% schema %}
+{
+  "name": "Product Blocks",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Select Product"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Blocks",
+      "blocks": [
+        { "type": "product" },
+        { "type": "product" }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  .product-blocks-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .product-block {
+    width: calc(33.33% - 20px);
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 5px;
+    text-align: center;
+    background: #fff;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .product-block img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+  }
+
+  .product-block h2 {
+    font-size: 18px;
+    margin: 10px 0;
+  }
+
+  .product-block p {
+    font-size: 16px;
+    color: #333;
+  }
+
+  .product-block a {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 15px;
+    background: #0073e6;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 3px;
+  }
+
+  .product-block a:hover {
+    background: #005bb5;
+  }
+
+  @media (max-width: 768px) {
+    .product-block {
+      width: calc(50% - 20px);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .product-block {
+      width: 100%;
+    }
+  }
+</style>
+
+<div class="product-blocks-container">
+  {% for block in section.blocks %}
+    {% if block.settings.product != blank %}
+      <div class="product-block">
+        <h2>{{ block.settings.product.title }}</h2>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>

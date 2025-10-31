@@ -1,0 +1,129 @@
+{% schema %}
+{
+  "name": "Local Video Slider",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "video",
+      "name": "Video",
+      "settings": [
+        {
+          "type": "text",
+          "id": "video_title",
+          "label": "Video Title",
+          "default": "Video"
+        },
+        {
+          "type": "select",
+          "id": "tab",
+          "label": "Tab",
+          "options": [
+            { "value": "irl", "label": "sections.local_video_slider.irl" },
+            { "value": "say", "label": "sections.local_video_slider.say" }
+          ],
+          "default": "irl"
+        },
+        {
+          "type": "url",
+          "id": "video_url",
+          "label": "Video URL (MP4 from Shopify Files)"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 10,
+  "presets": [
+    { "name": "Local Video Slider with Tabs", "category": "Media" }
+  ]
+}
+{% endschema %}
+
+<style>
+  .local-video-slider-wrapper { max-width: 900px; margin: 0 auto; padding: 20px; }
+  .video-tabs { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
+  .video-tab { cursor: pointer; padding: 8px 16px; background: #eee; border-radius: 20px; font-weight: 500; transition: 0.3s; }
+  .video-tab.active { background: #007bff; color: #fff; }
+
+  .local-video-slider { position: relative; }
+  .local-video-slide { display: none; outline: none; }
+  .local-video-slide video { width: 100%; height: auto; border-radius: 8px; display: block; }
+
+  .slick-prev:before, .slick-next:before { color: #000; }
+</style>
+
+<div class="local-video-slider-wrapper">
+  <div class="video-tabs-title text-center mb-4">{{ 'sections.local_video_slider.title' | t }}</div>
+
+  <div class="video-tabs">
+    <div class="video-tab active" data-tab="irl">{{ 'sections.local_video_slider.irl' | t }}</div>
+    <div class="video-tab" data-tab="say">{{ 'sections.local_video_slider.say' | t }}</div>
+  </div>
+
+  <div class="local-video-slider">
+    {% for block in section.blocks %}
+      <div class="local-video-slide" data-tab="{{ block.settings.tab }}">
+        <video src="{{ block.settings.video_url }}" playsinline controls preload="metadata"></video>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
+
+<script>
+  $(document).ready(function() {
+    var $slider = $('.local-video-slider');
+    var $tabs = $('.video-tab');
+
+    function initSlider(tab) {
+      // Destroy existing slider
+      if ($slider.hasClass('slick-initialized')) $slider.slick('unslick');
+
+      // Show only active tab slides
+      $slider.children().hide();
+      var $activeSlides = $slider.children('[data-tab="'+tab+'"]').show();
+
+      // Initialize slick slider
+      $slider.slick({
+        dots: false,
+        arrows: true,
+        infinite: true,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        adaptiveHeight: true
+      });
+
+      // Play first visible video
+      playActiveVideo();
+    }
+
+    function playActiveVideo() {
+      pauseAllVideos();
+      var video = $slider.find('.slick-current video').get(0);
+      if(video) video.play().catch(()=>{});
+    }
+
+    function pauseAllVideos() {
+      $slider.find('video').each(function(_, video){
+        video.pause(); video.currentTime = 0;
+      });
+    }
+
+    // Tab click event
+    $tabs.on('click', function(){
+      var tab = $(this).data('tab');
+      $tabs.removeClass('active'); $(this).addClass('active');
+      initSlider(tab);
+    });
+
+    // Pause all videos before slide change
+    $slider.on('beforeChange', pauseAllVideos);
+    $slider.on('afterChange', playActiveVideo);
+
+    // Initialize slider with first tab
+    initSlider('irl');
+  });
+</script>
