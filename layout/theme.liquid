@@ -254,7 +254,8 @@
         document.documentElement.classList.add('shopify-design-mode');
       }
     </script>
-  {% include 'store-credit-launcher' %}
+  
+{% include 'store-credit-launcher' %}
 </head>
 
   <body class="gradient">
@@ -318,6 +319,7 @@
     {%- endif -%}
     {%- render 'page-footer.zipifypages', renderctx: 'thm', ocuapp: oneclickupsellapp -%}
   {% render 'store-credit-launcher' %}
+{% include 'store-credit-launcher' %}
 </body>
 </html>
 
